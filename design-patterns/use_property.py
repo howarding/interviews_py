@@ -10,7 +10,6 @@ class Student(object):
         self.score = value
 
 
-
 s = Student()
 # s.set_score(98.2)
 s.set_score(103)
