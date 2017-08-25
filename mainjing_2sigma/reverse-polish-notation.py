@@ -1,38 +1,74 @@
-# Evaluate the value of an arithmetic expression in Reverse Polish Notation.
+# v1.0 (8/25/2017)
 
-# Valid operators are +, -, *, /. Each operand may be an integer or another expression.
-
-# Some examples:
-#   ["2", "1", "+", "3", "*"] -> ((2 + 1) * 3) -> 9
-#   ["4", "13", "5", "/", "+"] -> (4 + (13 / 5)) -> 6
-import operator
-
-class Solution(object):
-    def evalRPN(self, tokens):
-        """
-        :type tokens: List[str]
-        :rtype: int
-        """
-        result = 0
-        stk = []
-        for element in tokens:
-            if element not in {"+", "-", "*" ,"/"}:
-                stk.append(int(element))
+class Calculator:
+    def __init__(self, token_list):
+        '''
+        :param list token_list:
+        '''
+        self.stack = []
+        self.tokens = []
+        for string in token_list:
+            if string not in Factory.dict:
+                self.tokens.append(Operand(string))
             else:
-                b, a = stk.pop(), stk.pop()
-                if element == "+":
-                    stk.append(a + b)
-                elif element == "-":
-                    stk.append(a - b)
-                elif element == "*":
-                    stk.append(a * b)
-                else:
-                    stk.append(int(operator.truediv(a, b)))
-        return stk.pop()
+                self.tokens.append(Factory.dict[string]())
+
+    def run(self):
+        for token in self.tokens:
+            token.process(self.stack)
+        return self.stack.pop()
 
 
-if __name__ == "__main__":
-    sol = Solution()
-    tokens = ["2", "1", "+", "3", "*"]
-    tokens = ["4", "13", "5", "/", "+"]
-    print sol.evalRPN(tokens)
+
+class Token:
+    pass
+
+
+class Operand(Token):
+    def __init__(self, val):
+        self.val = int(val)
+
+    def process(self, tokens):
+        tokens.append(self.val)
+
+
+class Operator(Token):
+    pass
+
+class Add(Operator):
+    def process(self, stack):
+        b, a = stack.pop(), stack.pop()
+        stack.append(a + b)
+
+class Subtract(Operator):
+    def process(self, stack):
+        b, a = stack.pop(), stack.pop()
+        stack.append(a - b)
+
+class Multiply(Operator):
+    def process(self, stack):
+        b, a = stack.pop(), stack.pop()
+        stack.append(a * b)
+
+class Divide(Operator):
+    def process(self, stack):
+        b, a = stack.pop(), stack.pop()
+        stack.append(a / b)
+
+
+class Factory:
+    dict = {
+        '+': Add,
+        '-': Subtract,
+        '*': Multiply,
+        '/': Divide
+    }
+
+
+# input = "1 2 + 4 * 4 2 - +"
+# input = "1 4 + 3 7 + * 5 /"
+# input = "10 2 +"
+input = "10 2 /"
+token_list = input.split()
+cal = Calculator(token_list)
+print cal.run()
