@@ -19,18 +19,15 @@ class Calculator:
         return self.stack.pop()
 
 
-
 class Token:
     pass
-
 
 class Operand(Token):
     def __init__(self, val):
         self.val = int(val)
 
-    def process(self, tokens):
-        tokens.append(self.val)
-
+    def process(self, stack):
+        stack.append(self.val)
 
 class Operator(Token):
     pass
